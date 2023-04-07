@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+         http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+>
+
+    <!-- 配置自动扫描的基包 -->
+    <context:component-scan base-package="com.ssm"/>
+
+    <!-- 实例化业务类的Bean -->
+    <bean id="productService1" class="com.ssm.unit4.aop1.service.impl.ProductServiceImpl"></bean>
+
+    <!-- 实例化日志通知/增强处理(切面)的Bean -->
+    <bean id="allLogAdvice" class="com.ssm.unit4.aop1.aop.AllLogAdvice"/>
+
+    <!-- 配置aop -->
+    <aop:config>
+        <!-- 配置日志切面 -->
+        <aop:aspect id="logaop" ref="allLogAdvice">
+            <!-- 定制切入点，可采用正则表达式，含义是对browse方法，进行拦截 -->
+            <aop:pointcut expression="execution(* com.ssm.unit4..*.*(..))"
+                          id="logpointcut"/>
+            <!-- expression="execution(* com.ssm.service.*.*(..))" -->
+            <!-- 将日志通知类中的myBeforeAdvice方法指定为前置通知 -->
+            <!-- <aop:before method="myBeforeAdvice" pointcut-ref="logpointcut" /> -->
+            <!-- 将日志通知类中的myAfterReturnAdvice方法指定为返回通知 -->
+            <!-- <aop:after-returning method="myAfterReturnAdvice" pointcut-ref="logpointcut"/> -->
+            <!-- 将日志通知类中的myThrowingAdvice方法指定为异常通知 -->
+            <!-- <aop:after-throwing method="myThrowingAdvice" pointcut-ref="logpointcut"
+                throwing="e"/> -->
+            <!-- 将日志通知类中的myAroundAdvice方法指定为环绕通知 -->
+            <aop:around method="myAroundAdvice" pointcut-ref="logpointcut"/>
+        </aop:aspect>
+    </aop:config>
+
+    <!-- 配置一个bean，将指定类配置给Spring，让Spring来创建其对象的实例 -->
+    <bean id="helloSpring" class="com.ssm.spring2.HelloSpring">
+        <!-- 为属性赋值 -->
+        <property name="userName" value="张三"></property>
+    </bean>
+
+    <bean id="adminInfo" class="com.ssm.spring2.AdminInfo">
+        <property name="id" value="5"></property>
+        <constructor-arg name="name" value="admin"></constructor-arg>
+        <constructor-arg name="pwd" value="123456"/>
+    </bean>
+    <bean id="admin" class="com.ssm.spring2.AdminInfo" p:id="8" p:name="yzpc" p:pwd="yzpc"/>
+
+    <!-- 配置创建UserDAOImpl的实例 -->
+    <bean id="userDAO" class="com.ssm.spring2.dao.impl.UserDAOImpl"/>
+    <!-- 配置创建UserServiceImpl的实例 -->
+    <bean id="userService" class="com.ssm.spring2.service.impl.UserServiceImpl" autowire="byName">
+        <!-- 属性setter方法依赖注入数据访问层的组件 -->
+        <!-- 	<property name="userDAO" ref="userDAO">
+                </property> -->
+    </bean>
+
+    <bean class="com.ssm.spring2.AdminInfo"></bean>
+</beans>
